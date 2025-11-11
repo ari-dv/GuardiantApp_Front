@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    tools:context=".setup.SetupPinsActivity">
+
+    <!-- Título y Descripción -->
+    <TextView
+        android:id="@+id/textViewTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Paso 1: PIN Normal"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textViewDesc"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Crea tu PIN normal (4-6 dígitos)."
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewTitle" />
+
+    <!-- Visor de PIN (Puntos) -->
+    <TextView
+        android:id="@+id/textPinDisplay"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:background="@drawable/pin_display_background"
+        android:gravity="center"
+        android:letterSpacing="0.2"
+        android:padding="16dp"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewDesc"
+        tools:text="● ● ● ●" />
+
+    <!-- Botón de Continuar (ahora anclado al teclado) -->
+    <Button
+        android:id="@+id/buttonContinue"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:padding="16dp"
+        android:text="Continuar"
+        app:layout_constraintBottom_toTopOf="@+id/keypad"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <!-- Teclado Numérico (Anclado al fondo) -->
+    <GridLayout
+        android:id="@+id/keypad"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:columnCount="3"
+        android:rowCount="4"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <!-- Fila 1 -->
+        <Button style="@style/Widget.App.Button.Keypad" android:tag="1" android:text="1" />
+        <Button style="@style/Widget.App.Button.Keypad" android:tag="2" android:text="2" />
+        <Button style="@style/Widget.App.Button.Keypad" android:tag="3" android:text="3" />
+        <!-- Fila 2 -->
+        <Button style="@style/Widget.App.Button.Keypad" android:tag="4" android:text="4" />
+        <Button style="@style/Widget.App.Button.Keypad" android:tag="5" android:text="5" />
+        <Button style="@style/Widget.App.Button.Keypad" android:tag="6" android:text="6" />
+        <!-- Fila 3 -->
+        <Button style="@style/Widget.App.Button.Keypad" android:tag="7" android:text="7" />
+        <Button style="@style/Widget.App.Button.Keypad" android:tag="8" android:text="8" />
+        <Button style="@style/Widget.App.Button.Keypad" android:tag="9" android:text="9" />
+        <!-- Fila 4 -->
+        <!-- Botón invisible para alinear la fila -->
+        <Button
+            style="@style/Widget.App.Button.Keypad"
+            android:tag="dummy"
+            android:text=""
+            android:visibility="invisible"/>
+        <Button style="@style/Widget.App.Button.Keypad" android:tag="0" android:text="0" />
+        <Button
+            style="@style/Widget.App.Button.Keypad"
+            android:tag="del"
+            app:icon="@android:drawable/ic_input_delete"
+            app:iconGravity="textStart"
+            android:paddingStart="0dp"
+            android:paddingEnd="0dp"
+            app:iconPadding="0dp"
+            android:text="" />
+
+    </GridLayout>
+
+    <!-- Indicador de Carga -->
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

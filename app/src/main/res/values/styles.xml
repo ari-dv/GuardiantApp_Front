@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+    Este es el estilo personalizado para los botones del teclado numérico.
+    Hereda de un botón de texto (sin bordes) y se asegura de que
+    cada botón ocupe el mismo espacio en el GridLayout.
+    -->
+    <style name="Widget.App.Button.Keypad" parent="Widget.Material3.Button.TextButton">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <!-- Esto hace que se estiren para llenar la columna -->
+        <item name="android:layout_columnWeight">1</item>
+        <!-- Esto hace que se estiren para llenar la fila -->
+        <item name="android:layout_rowWeight">1</item>
+        <item name="android:layout_gravity">fill</item>
+        <!-- Ajusta el tamaño del botón y del texto -->
+        <item name="android:paddingTop">16dp</item>
+        <item name="android:paddingBottom">16dp</item>
+        <item name="android:textSize">24sp</item>
+        <!-- Opcional: define un color específico si no te gusta el de por defecto -->
+        <!-- <item name="android:textColor">?attr/colorPrimary</item> -->
+    </style>
+</resources>

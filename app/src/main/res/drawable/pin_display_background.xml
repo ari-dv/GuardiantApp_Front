@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Este 'shape' define el borde y fondo para el visor del PIN -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+
+    <!-- Fondo del visor (un gris muy claro) -->
+    <solid android:color="#FAFAFA" />
+
+    <!-- Borde (un color gris estándar) -->
+    <stroke
+        android:width="1dp"
+        android:color="#E0E0E0" />
+
+    <!-- Esquinas redondeadas -->
+    <corners android:radius="8dp" />
+
+</shape>
