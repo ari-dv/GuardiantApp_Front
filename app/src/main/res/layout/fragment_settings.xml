@@ -1,15 +1,105 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".main.SettingsFragment">
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@android:color/white">
 
+    <!-- Título -->
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:text="⚙️ Ajustes de Seguridad"
+        android:textSize="24sp"
+        android:textStyle="bold"
         android:gravity="center"
-        android:text="Pestaña de Ajustes (SettingsFragment)"
-        android:textSize="20sp"/>
+        android:layout_marginBottom="24dp" />
 
-</FrameLayout>
+    <!-- BOTÓN DE PÁNICO - CRÍTICO -->
+    <Button
+        android:id="@+id/buttonEmergencyLock"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:text="🚨 BOTÓN DE PÁNICO"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/white"
+        android:backgroundTint="@android:color/holo_red_dark"
+        android:layout_marginBottom="12dp" />
+
+    <!-- Botón Cambiar PINs -->
+    <Button
+        android:id="@+id/buttonChangePins"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="🔐 Cambiar PINs"
+        android:textSize="16sp"
+        android:textColor="@android:color/white"
+        android:backgroundTint="@android:color/holo_blue_dark"
+        android:layout_marginBottom="12dp" />
+
+    <!-- Botón Contactos de Emergencia -->
+    <Button
+        android:id="@+id/buttonEmergencyContacts"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="📞 Contactos de Emergencia"
+        android:textSize="16sp"
+        android:textColor="@android:color/white"
+        android:backgroundTint="@android:color/holo_green_dark"
+        android:layout_marginBottom="24dp" />
+
+    <!-- Separador -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Estado del Monitoreo -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="📊 Estado del Monitoreo"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="12dp" />
+
+    <!-- Card de Status -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="4dp"
+        android:layout_marginBottom="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="12dp">
+
+            <TextView
+                android:id="@+id/textViewMonitoringStatus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="✓ Acelerómetro: Activo\n✓ GPS: Activo\n✓ Detección: Habilitada"
+                android:textSize="14sp"
+                android:lineSpacingMultiplier="1.5" />
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+    <!-- Información -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="ℹ️ La app está monitoreando continuamente movimientos anormales y cambios de ubicación sospechosos."
+        android:textSize="12sp"
+        android:textColor="@android:color/darker_gray"
+        android:layout_marginTop="16dp" />
+
+</LinearLayout>

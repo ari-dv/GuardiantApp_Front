@@ -73,6 +73,60 @@ data class GetSetupStatusResponse(
     @SerializedName("success") val success: Boolean,
     @SerializedName("data") val data: SetupStatusResponseData
 )
+
+// Requests para Security Events
+
+// Requests para Security Events
+
+data class AbnormalMovementRequest(
+    @SerializedName("latitude") val latitude: Double,
+    @SerializedName("longitude") val longitude: Double,
+    @SerializedName("accelerationValue") val accelerationValue: Float
+)
+
+data class SuspiciousSpeedRequest(
+    @SerializedName("latitude") val latitude: Double,
+    @SerializedName("longitude") val longitude: Double,
+    @SerializedName("calculatedSpeed") val calculatedSpeed: Double,
+    @SerializedName("distance") val distance: Double? = null,
+    @SerializedName("timeDiff") val timeDiff: Double? = null
+)
+
+data class PanicButtonRequest(
+    @SerializedName("latitude") val latitude: Double,
+    @SerializedName("longitude") val longitude: Double,
+    @SerializedName("reason") val reason: String? = null
+)
+
+data class LockDeviceRequest(
+    @SerializedName("alertId") val alertId: String
+)
+
+data class WipeDeviceRequest(
+    @SerializedName("alertId") val alertId: String
+)
+
+data class DeactivateSecurityRequest(
+    @SerializedName("alertId") val alertId: String
+)
+
+data class SecurityAlert(
+    @SerializedName("id") val id: String,
+    @SerializedName("type") val type: String,
+    @SerializedName("timestamp") val timestamp: Long,
+    @SerializedName("status") val status: String,
+    @SerializedName("details") val details: Map<String, Any>
+)
+
+data class SecurityAlertsResponse(
+    @SerializedName("success") val success: Boolean,
+    @SerializedName("data") val data: AlertsData
+)
+
+data class AlertsData(
+    @SerializedName("alerts") val alerts: List<SecurityAlert>
+)
+
 // ---------------------------------------------------------------------------------
 // 2. INTERFAZ DE LA API (Definición de Endpoints)
 // ¡TODAS las respuestas ahora usan OnCallResultWrapper!
@@ -137,6 +191,48 @@ interface GuardiantApi {
         @Body request: OnCallRequest<EmptyRequest> = OnCallRequest(EmptyRequest)
     ): Response<GetSetupStatusResponse> // <-- Ahora usa la clase de respuesta específica
 
-    // ... (actualiza el resto si las usas) ...
+    @POST("reportAbnormalMovement")
+    suspend fun reportAbnormalMovement(
+        @Header("Authorization") token: String,
+        @Body request: OnCallRequest<AbnormalMovementRequest>
+    ): Response<OnCallResultWrapper<GenericResponse>>
+
+    @POST("reportSuspiciousSpeed")
+    suspend fun reportSuspiciousSpeed(
+        @Header("Authorization") token: String,
+        @Body request: OnCallRequest<SuspiciousSpeedRequest>
+    ): Response<OnCallResultWrapper<GenericResponse>>
+
+    @POST("triggerPanicButton")
+    suspend fun triggerPanicButton(
+        @Header("Authorization") token: String,
+        @Body request: OnCallRequest<PanicButtonRequest>
+    ): Response<OnCallResultWrapper<GenericResponse>>
+
+// ENDPOINTS DE CONTROL REMOTO
+
+    @POST("lockDeviceRemotely")
+    suspend fun lockDeviceRemotely(
+        @Header("Authorization") token: String,
+        @Body request: OnCallRequest<LockDeviceRequest>
+    ): Response<OnCallResultWrapper<GenericResponse>>
+
+    @POST("wipeDeviceRemotely")
+    suspend fun wipeDeviceRemotely(
+        @Header("Authorization") token: String,
+        @Body request: OnCallRequest<WipeDeviceRequest>
+    ): Response<OnCallResultWrapper<GenericResponse>>
+
+    @POST("deactivateSecurityMode")
+    suspend fun deactivateSecurityMode(
+        @Header("Authorization") token: String,
+        @Body request: OnCallRequest<DeactivateSecurityRequest>
+    ): Response<OnCallResultWrapper<GenericResponse>>
+
+    @POST("getSecurityAlerts")
+    suspend fun getSecurityAlerts(
+        @Header("Authorization") token: String,
+        @Body request: OnCallRequest<EmptyRequest> = OnCallRequest(EmptyRequest)
+    ): Response<OnCallResultWrapper<SecurityAlertsResponse>>
 
 }

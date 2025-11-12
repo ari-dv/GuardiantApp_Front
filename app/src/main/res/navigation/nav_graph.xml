@@ -5,28 +5,24 @@
     android:id="@+id/nav_graph"
     app:startDestination="@id/nav_home">
 
-    <!--
-    ¡CORRECCIÓN!
-    Cambiamos android:name para que apunte a las clases reales de Fragment
-    (Asegúrate de que 'com.guardiant.app' sea tu namespace/packageId)
-    -->
-
     <fragment
         android:id="@+id/nav_home"
         android:name="com.guardiant.app.main.HomeFragment"
-        android:label="fragment_home"
-        tools:layout="@layout/fragment_home" />
+        android:label="Inicio" />
 
     <fragment
         android:id="@+id/nav_activity"
         android:name="com.guardiant.app.main.ActivityFragment"
-        android:label="fragment_activity"
-        tools:layout="@layout/fragment_activity" />
+        android:label="Actividades" />
+
+    <fragment
+        android:id="@+id/nav_alerts"
+        android:name="com.guardiant.app.main.AlertsFragment"
+        android:label="Alertas" />
 
     <fragment
         android:id="@+id/nav_settings"
         android:name="com.guardiant.app.main.SettingsFragment"
-        android:label="fragment_settings"
-        tools:layout="@layout/fragment_settings" />
+        android:label="Ajustes" />
 
 </navigation>

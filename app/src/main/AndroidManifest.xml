@@ -2,12 +2,30 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Permiso para conectarse al backend -->
+    <!-- ============================================
+         PERMISOS
+         ============================================ -->
+
+    <!-- Internet -->
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <!-- ¡PERMISO NUEVO! Para escanear apps instaladas (Android 11+) -->
+    <!-- Escanear apps instaladas (Android 11+) -->
     <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"
         tools:ignore="QueryAllPackagesPermission" />
+
+    <!-- Location/GPS -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+
+    <!-- Device Admin (Bloqueo remoto) - TODO: Cuando tengas permisos -->
+    <!-- <uses-permission android:name="android.permission.BIND_DEVICE_ADMIN" /> -->
+
+    <!-- Accessibility Service (Monitoreo) - TODO: Cuando tengas permisos -->
+    <!-- <uses-permission android:name="android.permission.BIND_ACCESSIBILITY_SERVICE" /> -->
+
+    <!-- FCM Notifications -->
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
 
     <application
         android:allowBackup="true"
@@ -20,7 +38,9 @@
         android:theme="@style/Theme.GuardiantApp"
         tools:targetApi="31">
 
-        <!-- (El resto de tus activities: LoginActivity, MainActivity, etc.) -->
+        <!-- ============================================
+             ACTIVITIES
+             ============================================ -->
 
         <!-- Splash/Entry Point (LoginActivity) -->
         <activity
@@ -31,27 +51,42 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <!-- Registro (MainActivity) -->
         <activity
             android:name=".MainActivity"
             android:exported="false" />
+
         <!-- Verificación SMS -->
         <activity
             android:name=".auth.VerificationActivity"
             android:exported="false" />
+
         <!-- Setup Paso 1: PINs -->
         <activity
             android:name=".setup.SetupPinsActivity"
             android:exported="false" />
+
         <!-- Setup Paso 2: Apps -->
         <activity
             android:name=".setup.SetupAppsActivity"
             android:exported="false" />
+
         <!-- Destino Final: Home (con pestañas) -->
         <activity
             android:name=".main.HomeActivity"
             android:exported="false" />
-        <!-- Servicio de Mensajería (FCM) -->
+
+        <!-- Activity de Desbloqueo -->
+        <activity
+            android:name=".auth.UnlockActivity"
+            android:exported="false" />
+
+        <!-- ============================================
+             SERVICES
+             ============================================ -->
+
+        <!-- Servicio FCM (Mensajería Push) -->
         <service
             android:name=".security.MyFirebaseMessagingService"
             android:exported="false">
@@ -59,6 +94,54 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+
+        <!-- Servicio de Sensores (Acelerómetro) -->
+        <service
+            android:name=".security.SensorService"
+            android:enabled="true"
+            android:exported="false" />
+
+        <!-- Servicio de Ubicación (GPS) -->
+        <service
+            android:name=".security.LocationTrackingService"
+            android:enabled="true"
+            android:exported="false" />
+
+        <!-- Servicio de Accesibilidad (Monitoreo) - TODO: Implementar cuando tengas permisos -->
+        <!--
+        <service
+            android:name=".security.GuardiantAccessibilityService"
+            android:enabled="true"
+            android:exported="false"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/accessibility_service_config" />
+        </service>
+        -->
+
+        <!-- ============================================
+             RECEIVERS
+             ============================================ -->
+
+        <!-- Device Admin (Bloqueo/Borrado Remoto) - TODO: Implementar cuando tengas permisos -->
+        <!--
+        <receiver
+            android:name=".security.DeviceAdminReceiver"
+            android:label="@string/device_admin_label"
+            android:permission="android.permission.BIND_DEVICE_ADMIN"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
+            </intent-filter>
+            <meta-data
+                android:name="android.app.device_admin"
+                android:resource="@xml/device_admin_policy" />
+        </receiver>
+        -->
 
     </application>
 
