@@ -59,7 +59,20 @@ data class SuddenMovementRequest(val details: Map<String, Any>)
 data class FcmTokenRequest(val token: String)
 object EmptyRequest
 
-
+data class SetupStatusData(
+    @SerializedName("completed") val completed: Boolean = false,
+    @SerializedName("pinsConfigured") val pinsConfigured: Boolean = false,
+    @SerializedName("appsConfigured") val appsConfigured: Boolean = false
+)
+data class SetupStatusResponseData(
+    @SerializedName("setup") val setup: SetupStatusData = SetupStatusData()
+    // (puedes añadir currentMode, security, etc. si los necesitas aquí)
+)
+// Esta es la envoltura de respuesta para getSetupStatus
+data class GetSetupStatusResponse(
+    @SerializedName("success") val success: Boolean,
+    @SerializedName("data") val data: SetupStatusResponseData
+)
 // ---------------------------------------------------------------------------------
 // 2. INTERFAZ DE LA API (Definición de Endpoints)
 // ¡TODAS las respuestas ahora usan OnCallResultWrapper!
@@ -122,7 +135,7 @@ interface GuardiantApi {
     suspend fun getSetupStatus(
         @Header("Authorization") token: String,
         @Body request: OnCallRequest<EmptyRequest> = OnCallRequest(EmptyRequest)
-    ): Response<OnCallResultWrapper<Any>> // <- 'Any' para data flexible
+    ): Response<GetSetupStatusResponse> // <-- Ahora usa la clase de respuesta específica
 
     // ... (actualiza el resto si las usas) ...
 

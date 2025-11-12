@@ -5,6 +5,10 @@
     <!-- Permiso para conectarse al backend -->
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <!-- ¡PERMISO NUEVO! Para escanear apps instaladas (Android 11+) -->
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"
+        tools:ignore="QueryAllPackagesPermission" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -16,6 +20,8 @@
         android:theme="@style/Theme.GuardiantApp"
         tools:targetApi="31">
 
+        <!-- (El resto de tus activities: LoginActivity, MainActivity, etc.) -->
+
         <!-- Splash/Entry Point (LoginActivity) -->
         <activity
             android:name=".auth.LoginActivity"
@@ -25,33 +31,26 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <!-- Registro (MainActivity) -->
         <activity
             android:name=".MainActivity"
             android:exported="false" />
-
         <!-- Verificación SMS -->
         <activity
             android:name=".auth.VerificationActivity"
             android:exported="false" />
-
         <!-- Setup Paso 1: PINs -->
         <activity
             android:name=".setup.SetupPinsActivity"
             android:exported="false" />
-
-        <!-- ¡AQUÍ ESTÁ LA CORRECCIÓN! -->
         <!-- Setup Paso 2: Apps -->
         <activity
             android:name=".setup.SetupAppsActivity"
             android:exported="false" />
-
         <!-- Destino Final: Home (con pestañas) -->
         <activity
             android:name=".main.HomeActivity"
             android:exported="false" />
-
         <!-- Servicio de Mensajería (FCM) -->
         <service
             android:name=".security.MyFirebaseMessagingService"

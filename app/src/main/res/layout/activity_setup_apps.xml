@@ -22,13 +22,14 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="Selecciona las apps que quieres bloquear en modo seguridad.\n(Demo de Hackatón: Usando lista falsa)"
+        android:text="Detectamos estas apps sensibles. Selecciona las que quieres proteger."
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewTitle" />
 
-    <!-- Aquí iría un RecyclerView, pero para la demo usamos CheckBoxes -->
+    <!-- Contenedor para la lista de apps reales -->
     <ScrollView
+        android:id="@+id/scrollView"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="16dp"
@@ -38,36 +39,12 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
+        <!-- ¡NUEVO! Aquí es donde el código Kotlin añadirá los CheckBoxes -->
         <LinearLayout
+            android:id="@+id/appsListContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <CheckBox
-                android:id="@+id/checkApp1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="BCP (App Falsa 1)"
-                android:checked="true"/>
-            <CheckBox
-                android:id="@+id/checkApp2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Yape (App Falsa 2)"
-                android:checked="true"/>
-            <CheckBox
-                android:id="@+id/checkApp3"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Interbank (App Falsa 3)" />
-            <CheckBox
-                android:id="@+id/checkApp4"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Galería (App Falsa 4)"
-                android:checked="true"/>
-
-        </LinearLayout>
+            android:orientation="vertical" />
 
     </ScrollView>
 

@@ -8,8 +8,9 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.guardiant.app.MainActivity
 import com.guardiant.app.databinding.ActivityLoginBinding
-// Importamos la nueva actividad de Setup
+// Importamos los dos posibles destinos
 import com.guardiant.app.setup.SetupPinsActivity
+import com.guardiant.app.main.HomeActivity
 
 class LoginActivity : AppCompatActivity() {
 
@@ -23,13 +24,12 @@ class LoginActivity : AppCompatActivity() {
 
         setupObservers()
 
-        // Botón de Login
         binding.buttonLogin.setOnClickListener {
             val email = binding.editTextEmail.text.toString().trim()
             val password = binding.editTextPassword.text.toString().trim()
 
             if (email.isEmpty() || password.isEmpty()) {
-                Toast.makeText(this, "Complete todos los campos", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Complete todos loscampos", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
@@ -37,7 +37,6 @@ class LoginActivity : AppCompatActivity() {
             authViewModel.loginUser(email, password)
         }
 
-        // Texto para ir a Registro
         binding.textViewGoToRegister.setOnClickListener {
             startActivity(Intent(this, MainActivity::class.java))
             finish()
@@ -45,25 +44,41 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun setupObservers() {
-        // Observador de errores
         authViewModel.errorMessage.observe(this) { message ->
             if (message != null) {
                 binding.progressBar.visibility = View.GONE
                 Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+                authViewModel.clearErrorMessage() // Limpiar después de mostrar
             }
         }
 
-        // Observador de éxito en login
         authViewModel.loginSuccess.observe(this) { success ->
             if (success) {
-                binding.progressBar.visibility = View.GONE
-                Toast.makeText(this, "Inicio de sesión exitoso", Toast.LENGTH_SHORT).show()
+                // --- ¡MEJORA DE UX! ---
+                // Informamos al usuario que estamos revisando el estado
+                Toast.makeText(this, "Inicio de sesión exitoso. Verificando estado...", Toast.LENGTH_SHORT).show()
 
-                // ---- LÓGICA ACTUALIZADA ----
-                // ¡Navegamos a la configuración de PINs!
+                // 1. El Login fue exitoso. AHORA, revisamos el estado del setup.
+                authViewModel.checkSetupStatus()
+            }
+        }
+
+        authViewModel.isSetupComplete.observe(this) { isComplete ->
+            binding.progressBar.visibility = View.GONE
+
+            // 2. Navegamos basado en el resultado
+            if (isComplete) {
+                // Ir al Dashboard Principal
+                Toast.makeText(this, "¡Bienvenido de vuelta!", Toast.LENGTH_SHORT).show()
+                val intent = Intent(this, HomeActivity::class.java)
+                startActivity(intent)
+                finishAffinity()
+            } else {
+                // Ir al inicio del Flujo de Configuración
+                Toast.makeText(this, "Completando configuración...", Toast.LENGTH_SHORT).show()
                 val intent = Intent(this, SetupPinsActivity::class.java)
                 startActivity(intent)
-                finishAffinity() // Cierra todas las actividades de auth
+                finishAffinity()
             }
         }
     }

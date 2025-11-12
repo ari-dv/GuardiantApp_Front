@@ -1,4 +1,4 @@
-package com.guardiant.app.setup // <-- ¡PAQUETE CORREGIDO!
+package com.guardiant.app.setup
 
 import android.content.Intent
 import android.os.Bundle
@@ -7,66 +7,38 @@ import android.widget.CheckBox
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-// --- ¡IMPORTACIONES CORREGIDAS! ---
-// Estas líneas resuelven 'Unresolved reference 'R'' y 'ActivitySetupAppsBinding'
-import com.guardiant.app.R
 import com.guardiant.app.databinding.ActivitySetupAppsBinding
 import com.guardiant.app.main.HomeActivity
 import com.guardiant.app.network.AppConfig
-// ---------------------------------
 
 class SetupAppsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySetupAppsBinding
     private val setupViewModel: SetupViewModel by viewModels()
 
-    // Lista Falsa para la Demo
-    // ¡CORRECCIÓN! Usamos los IDs reales de 'R'
-    private val fakeAppsList by lazy {
-        mapOf(
-            binding.checkApp1.id to AppConfig("BCP (Demo)", "com.bcp.demo", null),
-            binding.checkApp2.id to AppConfig("Yape (Demo)", "com.yape.demo", null),
-            binding.checkApp3.id to AppConfig("Interbank (Demo)", "com.interbank.demo", null),
-            binding.checkApp4.id to AppConfig("Galería (Demo)", "com.gallery.demo", null)
-        )
-    }
+    // --- ¡NUEVO! ---
+    // Almacena las apps encontradas para enviarlas
+    private var foundAppsMap = mutableMapOf<Int, AppConfig>() // <CheckboxId, AppConfig>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySetupAppsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Ya no necesitamos refrescar el token aquí, el ViewModel lo hace
-        // setupViewModel.refreshIdToken()
+        // 1. Refrescar el token (necesario para las llamadas a API
+
+        // 2. Configurar los observadores
         setupObservers()
 
+        // 3. ¡Ejecutar el escaneo real!
+        binding.progressBar.visibility = View.VISIBLE
+        // Le pasamos el 'packageManager' de Android al ViewModel
+        setupViewModel.loadInstalledApps(packageManager)
+
+        // 4. Configurar el botón de guardar
         binding.buttonSaveApps.setOnClickListener {
             saveSelectedApps()
         }
-    }
-
-    private fun saveSelectedApps() {
-        binding.progressBar.visibility = View.VISIBLE
-
-        val selectedApps = mutableListOf<AppConfig>()
-
-        // Recolectar apps de la lista falsa
-        fakeAppsList.forEach { (checkboxId, appConfig) ->
-            // Usamos binding para encontrar las vistas, es más seguro
-            val checkBox = findViewById<CheckBox>(checkboxId)
-            if (checkBox != null && checkBox.isChecked) {
-                selectedApps.add(appConfig)
-            }
-        }
-
-        if (selectedApps.isEmpty()) {
-            Toast.makeText(this, "Selecciona al menos una app", Toast.LENGTH_SHORT).show()
-            binding.progressBar.visibility = View.GONE
-            return
-        }
-
-        // Llamar al ViewModel para guardar
-        setupViewModel.saveProtectedApps(selectedApps)
     }
 
     private fun setupObservers() {
@@ -78,16 +50,44 @@ class SetupAppsActivity : AppCompatActivity() {
             }
         }
 
+        // --- ¡NUEVO! ---
+        // Observador para la lista de apps encontradas
+        setupViewModel.foundApps.observe(this) { apps ->
+            binding.progressBar.visibility = View.GONE
+            // Limpiar la lista (si había algo)
+            binding.appsListContainer.removeAllViews()
+            foundAppsMap.clear()
+
+            if (apps.isNotEmpty()) {
+                // Crear los CheckBoxes dinámicamente
+                apps.forEach { appInfo ->
+                    val checkBox = CheckBox(this).apply {
+                        text = "${appInfo.appName} (${appInfo.packageName})"
+                        isChecked = true // Marcarlas por defecto
+                        id = View.generateViewId() // Generar un ID único
+                        textSize = 16f
+                        setPadding(8, 16, 8, 16)
+                    }
+                    // Guardar la referencia
+                    foundAppsMap[checkBox.id] = AppConfig(appInfo.appName, appInfo.packageName, null)
+                    // Añadir el CheckBox al LinearLayout
+                    binding.appsListContainer.addView(checkBox)
+                }
+            } else {
+                binding.textViewDesc.text = "No se encontraron apps bancarias o de redes sociales instaladas."
+            }
+        }
+
+        // Observador para guardar apps
         setupViewModel.saveAppsSuccess.observe(this) { success ->
             if (success) {
                 // Apps guardadas, ahora llamamos a finalizar el setup
-                // (En un flujo real, aquí iría la pantalla de Permisos)
-                // Para la hackatón, finalizamos de frente.
-                Toast.makeText(this, "Apps guardadas, finalizando...", Toast.LENGTH_SHORT).show()
+                // (Para la hackatón, finalizamos de frente)
                 setupViewModel.completeSetup()
             }
         }
 
+        // Observador para setup completo
         setupViewModel.setupCompleteSuccess.observe(this) { success ->
             if (success) {
                 binding.progressBar.visibility = View.GONE
@@ -99,5 +99,29 @@ class SetupAppsActivity : AppCompatActivity() {
                 finishAffinity() // Cierra todas las actividades anteriores
             }
         }
+    }
+
+    private fun saveSelectedApps() {
+        binding.progressBar.visibility = View.VISIBLE
+
+        val selectedApps = mutableListOf<AppConfig>()
+
+        // Recolectar apps de los CheckBoxes dinámicos
+        foundAppsMap.forEach { (checkboxId, appConfig) ->
+            findViewById<CheckBox>(checkboxId)?.let {
+                if (it.isChecked) {
+                    selectedApps.add(appConfig)
+                }
+            }
+        }
+
+        if (selectedApps.isEmpty()) {
+            Toast.makeText(this, "Debes seleccionar al menos una app para proteger", Toast.LENGTH_SHORT).show()
+            binding.progressBar.visibility = View.GONE
+            return
+        }
+
+        // Llamar al ViewModel para guardar
+        setupViewModel.saveProtectedApps(selectedApps)
     }
 }
