@@ -8,6 +8,7 @@ import android.widget.Button
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.gms.location.LocationServices
 import com.guardiant.app.databinding.ActivityUnlockBinding
 import com.guardiant.app.main.HomeActivity
 import com.guardiant.app.network.GuardiantApi
@@ -16,7 +17,7 @@ import com.guardiant.app.network.PanicButtonRequest
 import com.guardiant.app.network.VerifyPinRequest
 import com.google.firebase.auth.FirebaseAuth
 import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
+import com.guardiant.app.ui.PinKeypadComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

@@ -4,31 +4,33 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
-import android.widget.GridLayout
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.guardiant.app.databinding.ActivitySetupPinsBinding
-import com.guardiant.app.setup.SetupAppsActivity
+import com.guardiant.app.ui.PinKeypadComponent
 
 class SetupPinsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySetupPinsBinding
     private val setupViewModel: SetupViewModel by viewModels()
+    private lateinit var pinKeypad: PinKeypadComponent
 
     private enum class SetupStep {
         SET_NORMAL_PIN,
         CONFIRM_NORMAL_PIN,
         SET_SECURITY_PIN
     }
+
     private var currentStep = SetupStep.SET_NORMAL_PIN
     private var tempNormalPin = ""
-    private var pinBuilder = StringBuilder()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySetupPinsBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        pinKeypad = binding.pinKeypad
 
         setupKeypad()
         setupObservers()
@@ -36,23 +38,18 @@ class SetupPinsActivity : AppCompatActivity() {
     }
 
     /**
-     * Conecta los listeners para el teclado numérico
+     * Configurar el componente de teclado
      */
     private fun setupKeypad() {
-        val keypadGrid = binding.keypad // <-- CORREGIDO: Usamos el ID 'keypad' del XML
-        for (i in 0 until keypadGrid.childCount) {
-            val view = keypadGrid.getChildAt(i)
-            if (view is Button) {
-                // Usamos el 'tag' del botón (0-9, del)
-                view.setOnClickListener { onKeypadClick(it) }
-            }
+        pinKeypad.onPinChanged = { pin ->
+            // Aquí puedes hacer algo cuando cambia el PIN
         }
 
         binding.buttonContinue.setOnClickListener { handleContinueClick() }
     }
 
     /**
-     * Actualiza la UI (títulos y texto) según el paso actual
+     * Actualizar UI según el paso actual
      */
     private fun updateUIForStep() {
         when (currentStep) {
@@ -72,48 +69,14 @@ class SetupPinsActivity : AppCompatActivity() {
                 binding.buttonContinue.text = "Finalizar Configuración de PINs"
             }
         }
-        pinBuilder.clear()
-        updatePinDisplay()
-    }
-
-    /**
-     * Maneja el clic en los botones del 0-9 y borrar
-     */
-    private fun onKeypadClick(view: View) {
-        // Obtenemos el tag (el número o "del")
-        val tag = view.tag.toString()
-
-        // Límite de 6 dígitos
-        if (pinBuilder.length >= 6 && tag != "del") {
-            return
-        }
-
-        when (tag) {
-            "del" -> {
-                if (pinBuilder.isNotEmpty()) {
-                    pinBuilder.deleteCharAt(pinBuilder.length - 1)
-                }
-            }
-            else -> {
-                pinBuilder.append(tag)
-            }
-        }
-        updatePinDisplay()
-    }
-
-    /**
-     * Muestra los puntos (●) en el visor
-     */
-    private fun updatePinDisplay() {
-        val pinText = "● ".repeat(pinBuilder.length)
-        binding.textPinDisplay.text = pinText.trim() // <-- CORREGIDO: Usamos el ID 'textPinDisplay'
+        pinKeypad.clearPin()
     }
 
     /**
      * Lógica principal al presionar "Continuar/Confirmar/Finalizar"
      */
     private fun handleContinueClick() {
-        val pin = pinBuilder.toString()
+        val pin = pinKeypad.getPin()
 
         // Validación de longitud
         if (pin.length < 4) {
@@ -133,15 +96,13 @@ class SetupPinsActivity : AppCompatActivity() {
                     updateUIForStep()
                 } else {
                     Toast.makeText(this, "Los PINs no coinciden", Toast.LENGTH_SHORT).show()
-                    pinBuilder.clear()
-                    updatePinDisplay()
+                    pinKeypad.clearPin()
                 }
             }
             SetupStep.SET_SECURITY_PIN -> {
                 if (pin == tempNormalPin) {
                     Toast.makeText(this, "El PIN de seguridad debe ser DIFERENTE al normal", Toast.LENGTH_SHORT).show()
-                    pinBuilder.clear()
-                    updatePinDisplay()
+                    pinKeypad.clearPin()
                     return
                 }
 

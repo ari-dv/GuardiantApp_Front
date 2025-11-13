@@ -13,9 +13,6 @@ class ActivityFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Infla el layout fragment_activity.xml
         return inflater.inflate(R.layout.fragment_activity, container, false)
     }
-
-    // Aquí iría la lógica para llamar a getActivityFeed
 }

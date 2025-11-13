@@ -1,94 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
-    tools:context=".auth.LoginActivity">
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:gravity="center">
 
     <TextView
-        android:id="@+id/textViewTitle"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Iniciar Sesión"
-        android:textSize="24sp"
+        android:textSize="28sp"
         android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:gravity="center"
+        android:layout_marginBottom="32dp" />
 
-    <!-- Campo de Email -->
+    <!-- Email -->
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textFieldEmail"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:hint="Email"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewTitle">
+        android:layout_marginBottom="16dp"
+        app:boxBackgroundMode="outline">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/editTextEmail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:hint="Email"
             android:inputType="textEmailAddress" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- Campo de Contraseña -->
+    <!-- Contraseña con ojito -->
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textFieldPassword"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:hint="Contraseña"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textFieldEmail">
+        android:layout_marginBottom="24dp"
+        app:boxBackgroundMode="outline"
+        app:passwordToggleEnabled="true">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/editTextPassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:hint="Contraseña"
             android:inputType="textPassword" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- Botón de Login -->
+    <!-- Botón Login -->
     <Button
         android:id="@+id/buttonLogin"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
         android:text="Iniciar Sesión"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textFieldPassword" />
+        android:textSize="16sp"
+        android:layout_marginBottom="16dp" />
 
-    <!-- Botón para ir a Registro -->
-    <TextView
-        android:id="@+id/textViewGoToRegister"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="¿No tienes cuenta? Regístrate"
-        android:textColor="@color/design_default_color_primary"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/buttonLogin" />
-
-    <!-- Indicador de Carga -->
+    <!-- Progress Bar -->
     <ProgressBar
         android:id="@+id/progressBar"
-        style="?android:attr/progressBarStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:visibility="visible" />
+        android:layout_marginBottom="16dp"
+        android:visibility="gone" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <!-- Link a Registro -->
+    <TextView
+        android:id="@+id/textViewGoToRegister"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="¿No tienes cuenta? Regístrate aquí"
+        android:textSize="14sp"
+        android:textColor="@android:color/holo_blue_dark"
+        android:gravity="center"
+        android:textStyle="bold" />
+
+</LinearLayout>

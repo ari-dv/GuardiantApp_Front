@@ -23,8 +23,6 @@ class MainActivity : AppCompatActivity() {
 
         setupObservers()
 
-        // --- Listeners de Botones ---
-
         // Botón de Registrar
         binding.buttonRegister.setOnClickListener {
             val email = binding.editTextEmail.text.toString().trim()
@@ -48,28 +46,22 @@ class MainActivity : AppCompatActivity() {
         // Texto para ir a Login
         binding.textViewGoToLogin.setOnClickListener {
             startActivity(Intent(this, LoginActivity::class.java))
-            finish() // Cierra esta actividad
+            finish()
         }
     }
 
-    /**
-     * Observa los cambios del ViewModel
-     */
     private fun setupObservers() {
-        // Observador de errores
         authViewModel.errorMessage.observe(this) { message ->
             binding.progressBar.visibility = View.GONE
             Toast.makeText(this, message, Toast.LENGTH_LONG).show()
         }
 
-        // Observador de éxito en registro
         authViewModel.registrationSuccess.observe(this) { success ->
             if (success) {
                 binding.progressBar.visibility = View.GONE
                 Toast.makeText(this, "Registro exitoso. Siguiente paso: verificar teléfono.", Toast.LENGTH_LONG).show()
-                // Navegar a la pantalla de verificación por SMS
                 startActivity(Intent(this, VerificationActivity::class.java))
-                finish() // Cierra esta actividad
+                finish()
             }
         }
     }
