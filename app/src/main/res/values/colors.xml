@@ -1,5 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Base Colors -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    
+    <!-- Guardiant Brand Colors -->
+    <color name="primary">#2196F3</color>
+    <color name="primary_dark">#1976D2</color>
+    <color name="accent">#FF5722</color>
+    
+    <!-- Success & Error -->
+    <color name="green">#4CAF50</color>
+    <color name="red">#F44336</color>
+    <color name="orange">#FF9800</color>
+    
+    <!-- Text Colors -->
+    <color name="gray">#9E9E9E</color>
+    <color name="dark_gray">#616161</color>
+    <color name="light_gray">#E0E0E0</color>
+    
+    <!-- Background Colors -->
+    <color name="light_blue">#E3F2FD</color>
+    <color name="light_green">#E8F5E9</color>
+    <color name="light_red">#FFEBEE</color>
+    <color name="light_orange">#FFF3E0</color>
 </resources>
