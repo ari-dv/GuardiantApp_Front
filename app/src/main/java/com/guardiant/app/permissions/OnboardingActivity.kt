@@ -266,10 +266,10 @@ class OnboardingActivity : AppCompatActivity() {
         // Marcar onboarding como completado
         onboardingHelper.markOnboardingCompleted()
         
-        // TODO: Navegar a la siguiente pantalla (SetupPinsActivity cuando exista)
-        // startActivity(Intent(this, SetupPinsActivity::class.java))
-        
-        finish()
+        // NAVEGAR A HOME (no solo finish())
+        val intent = Intent(this, com.guardiant.app.main.HomeActivity::class.java)
+        startActivity(intent)
+        finishAffinity() // Cierra todas las actividades anteriores (registro, verificación, setup, etc.)
     }
 
     /**

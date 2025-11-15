@@ -17,6 +17,35 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
     <uses-permission android:name="android.permission.VIBRATE" />
 
+    <queries>
+        <!-- Apps Bancarias Perú -->
+        <package android:name="com.bcp.bank.bcp" />
+        <package android:name="com.bcp.innovacxion.yapeapp" />
+        <package android:name="pe.com.interbank.mobilebanking" />
+        <package android:name="com.bbva.nxt_peru" />
+        <package android:name="pe.com.scotiabank.blpm.android.client" />
+        <package android:name="pe.com.bn.app.bancodelanacion" />
+        <package android:name="pe.com.banbif.bancamovil" />
+        <package android:name="com.pichincha.pe.bancamovil" />
+        <package android:name="com.google.android.apps.walletnfcrel" />
+        <package android:name="com.paysafe.pagoefectivo" />
+        
+        <!-- Apps Sociales y Sensibles -->
+        <package android:name="com.whatsapp" />
+        <package android:name="com.facebook.katana" />
+        <package android:name="com.instagram.android" />
+        <package android:name="com.google.android.apps.photos" />
+        <package android:name="com.google.android.gm" />
+        <package android:name="com.google.android.apps.docs" />
+        <package android:name="com.mercadolibre" />
+        <package android:name="com.sec.android.gallery3d" />
+        
+        <!-- Intent genérico para detectar todas las apps launcher (opcional) -->
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+        </intent>
+    </queries>
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -53,11 +82,38 @@
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" />
 
-        <!-- Onboarding Activity -->
+        <!-- Setup Pins Activity -->
+        <activity
+            android:name=".setup.SetupPinsActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
+
+        <!-- Setup Apps Activity -->
+        <activity
+            android:name=".setup.SetupAppsActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
+
+        <!-- Onboarding Activity (Permisos) -->
         <activity
             android:name=".permissions.OnboardingActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
+
+        <!-- Home Activity -->
+        <activity
+            android:name=".main.HomeActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <!-- Unlock Activity -->
+        <activity
+            android:name=".auth.UnlockActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
 
         <!-- Device Admin Receiver -->
         <receiver
@@ -83,6 +139,21 @@
                 android:resource="@xml/accessibility_service_config" />
             <intent-filter>
                 <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+        </service>
+
+        <!-- Location Tracking Service -->
+        <service
+            android:name=".security.LocationTrackingService"
+            android:exported="false"
+            android:foregroundServiceType="location" />
+
+        <!-- Firebase Messaging Service -->
+        <service
+            android:name=".security.MyFirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
 

@@ -54,27 +54,28 @@ class SetupAppsActivity : AppCompatActivity() {
         // Observador para la lista de apps encontradas
         setupViewModel.foundApps.observe(this) { apps ->
             binding.progressBar.visibility = View.GONE
-            // Limpiar la lista (si había algo)
             binding.appsListContainer.removeAllViews()
             foundAppsMap.clear()
 
             if (apps.isNotEmpty()) {
-                // Crear los CheckBoxes dinámicamente
                 apps.forEach { appInfo ->
                     val checkBox = CheckBox(this).apply {
-                        text = "${appInfo.appName} (${appInfo.packageName})"
-                        isChecked = true // Marcarlas por defecto
-                        id = View.generateViewId() // Generar un ID único
+                        text = appInfo.appName  // ✅ SOLO EL NOMBRE, SIN PACKAGE
+                        isChecked = true
+                        id = View.generateViewId()
                         textSize = 16f
                         setPadding(8, 16, 8, 16)
                     }
-                    // Guardar la referencia
                     foundAppsMap[checkBox.id] = AppConfig(appInfo.appName, appInfo.packageName, null)
-                    // Añadir el CheckBox al LinearLayout
                     binding.appsListContainer.addView(checkBox)
                 }
             } else {
-                binding.textViewDesc.text = "No se encontraron apps bancarias o de redes sociales instaladas."
+                val textView = android.widget.TextView(this).apply {
+                    text = "No se encontraron apps bancarias instaladas.\nPuedes continuar sin proteger apps."
+                    textSize = 16f
+                    setPadding(16, 16, 16, 16)
+                }
+                binding.appsListContainer.addView(textView)
             }
         }
 
@@ -91,12 +92,12 @@ class SetupAppsActivity : AppCompatActivity() {
         setupViewModel.setupCompleteSuccess.observe(this) { success ->
             if (success) {
                 binding.progressBar.visibility = View.GONE
-                Toast.makeText(this, "¡Configuración Completa!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "¡Apps guardadas!", Toast.LENGTH_SHORT).show()
 
-                // ¡Setup terminado! Navegamos a Home
-                val intent = Intent(this, HomeActivity::class.java)
+                // NAVEGAR A PERMISOS (OnboardingActivity)
+                val intent = Intent(this, com.guardiant.app.permissions.OnboardingActivity::class.java)
                 startActivity(intent)
-                finishAffinity() // Cierra todas las actividades anteriores
+                finishAffinity()
             }
         }
     }

@@ -47,6 +47,9 @@ data class VerifyPinRequest(val pin: String)
 data class ChangePinsRequest(val currentPin: String, val newNormalPin: String, val newSecurityPin: String)
 data class AppConfig(val appName: String, val packageName: String, val icon: String? = null)
 data class ProtectedAppsRequest(val apps: List<AppConfig>)
+data class ProtectedAppsResponse(
+    @SerializedName("apps") val apps: List<AppConfig>
+)
 data class ProtectionLevelRequest(val level: String)
 data class Contact(val name: String, val phone: String)
 data class UpdateProfileRequest(
@@ -169,6 +172,12 @@ interface GuardiantApi {
         @Header("Authorization") token: String,
         @Body request: OnCallRequest<ProtectedAppsRequest>
     ): Response<OnCallResultWrapper<GenericResponse>> // <- Corregido
+
+    @POST("getProtectedApps")
+    suspend fun getProtectedApps(
+        @Header("Authorization") token: String,
+        @Body request: OnCallRequest<EmptyRequest> = OnCallRequest(EmptyRequest)
+    ): Response<OnCallResultWrapper<ProtectedAppsResponse>>
 
     @POST("setProtectionLevel")
     suspend fun setProtectionLevel(

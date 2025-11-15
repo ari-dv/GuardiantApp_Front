@@ -2,17 +2,22 @@ package com.guardiant.app.main
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.google.firebase.auth.FirebaseAuth
 import com.guardiant.app.R
 import com.guardiant.app.auth.LoginActivity
+import com.guardiant.app.network.AppConfig
 import com.guardiant.app.network.GuardiantApi
 import com.guardiant.app.network.OnCallRequest
 import com.guardiant.app.network.PanicButtonRequest
@@ -71,6 +76,88 @@ class HomeFragment : Fragment() {
                 .setNegativeButton("No", null)
                 .show()
         }
+
+        // Cargar apps protegidas
+        loadProtectedApps(view)
+    }
+
+    private fun loadProtectedApps(view: View) {
+        val progressBar = view.findViewById<ProgressBar>(R.id.progressBarApps)
+        val appsContainer = view.findViewById<LinearLayout>(R.id.appsContainer)
+        val textAppsCount = view.findViewById<TextView>(R.id.textAppsCount)
+
+        progressBar.visibility = View.VISIBLE
+        
+        lifecycleScope.launch {
+            try {
+                val user = auth.currentUser
+                if (user == null) {
+                    showError("Usuario no autenticado")
+                    progressBar.visibility = View.GONE
+                    return@launch
+                }
+
+                val token = user.getIdToken(false).await().token
+                if (token == null) {
+                    showError("No se pudo obtener el token")
+                    progressBar.visibility = View.GONE
+                    return@launch
+                }
+
+                val response = api.getProtectedApps("Bearer $token")
+                
+                progressBar.visibility = View.GONE
+
+                if (response.isSuccessful && response.body() != null) {
+                    val apps = response.body()!!.result.apps
+                    displayProtectedApps(apps, appsContainer, textAppsCount)
+                } else {
+                    showError("Error al cargar apps: ${response.code()}")
+                    displayProtectedApps(emptyList(), appsContainer, textAppsCount)
+                }
+            } catch (e: Exception) {
+                progressBar.visibility = View.GONE
+                Log.e("HomeFragment", "Error cargando apps", e)
+                displayProtectedApps(emptyList(), appsContainer, textAppsCount)
+            }
+        }
+    }
+
+    private fun displayProtectedApps(apps: List<AppConfig>, container: LinearLayout, countText: TextView) {
+        container.removeAllViews()
+        
+        if (apps.isEmpty()) {
+            countText.text = "Apps protegidas: 0"
+            val noAppsText = TextView(requireContext()).apply {
+                text = "No tienes apps configuradas aún"
+                textSize = 14f
+                setPadding(16, 16, 16, 16)
+                setTextColor(resources.getColor(android.R.color.darker_gray, null))
+            }
+            container.addView(noAppsText)
+        } else {
+            countText.text = "Apps protegidas: ${apps.size}"
+            
+            apps.forEach { app ->
+                val appView = TextView(requireContext()).apply {
+                    text = "🔒 ${app.appName}"
+                    textSize = 16f
+                    setPadding(24, 16, 24, 16)
+                    setBackgroundResource(android.R.drawable.dialog_holo_light_frame)
+                    val params = LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                    )
+                    params.setMargins(0, 8, 0, 8)
+                    layoutParams = params
+                }
+                container.addView(appView)
+            }
+        }
+    }
+
+    private fun showError(message: String) {
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
 
     private fun triggerPanic() {

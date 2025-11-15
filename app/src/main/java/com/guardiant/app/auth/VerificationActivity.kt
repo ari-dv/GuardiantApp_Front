@@ -94,8 +94,8 @@ class VerificationActivity : AppCompatActivity() {
     private fun onVerificationSuccess() {
         Toast.makeText(this, "✅ Verificación exitosa", Toast.LENGTH_SHORT).show()
 
-        // 🆕 NAVEGAR AL ONBOARDING DE PERMISOS
-        val intent = Intent(this, com.guardiant.app.permissions.OnboardingActivity::class.java)
+        // NAVEGAR A SETUP DE PINES (NO a OnboardingActivity)
+        val intent = Intent(this, com.guardiant.app.setup.SetupPinsActivity::class.java)
         startActivity(intent)
         finish()
     }

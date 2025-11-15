@@ -89,36 +89,68 @@ class SetupViewModel : ViewModel() {
     // Unimos ambas listas para el escaneo.
     // SI QUIERES SOLO BANCARIAS, CAMIA ESTO A:
     // private val TARGET_PACKAGES = BANKING_PACKAGES
-    private val TARGET_PACKAGES = BANKING_PACKAGES+SENSITIVE_PACKAGES
+    private val TARGET_PACKAGES = BANKING_PACKAGES
 
     fun loadInstalledApps(packageManager: PackageManager) {
-        viewModelScope.launch(Dispatchers.IO) { // Tarea pesada, usar hilo IO
+        viewModelScope.launch(Dispatchers.IO) {
             val installedApps = packageManager.getInstalledApplications(PackageManager.GET_META_DATA)
             val foundTargetApps = mutableListOf<InstalledAppInfo>()
 
+            Log.d("SetupViewModel", "🔍 Iniciando escaneo de ${installedApps.size} apps...")
+            Log.d("SetupViewModel", "🎯 Buscando ${TARGET_PACKAGES.size} apps objetivo")
+
+            // ⭐ DEBUG: MOSTRAR APPS BANCARIAS Y SOCIALES INSTALADAS
             for (appInfo in installedApps) {
-                // Si la app está en nuestra lista de objetivos...
-                if (TARGET_PACKAGES.contains(appInfo.packageName)) {
-                    // Y no es una app del sistema (opcional, pero bueno)
-                    if ((appInfo.flags and ApplicationInfo.FLAG_SYSTEM) == 0) {
-                        foundTargetApps.add(
-                            InstalledAppInfo(
-                                appName = appInfo.loadLabel(packageManager).toString(),
-                                packageName = appInfo.packageName
-                            )
-                        )
-                    }
+                val packageName = appInfo.packageName.lowercase()
+                val appName = appInfo.loadLabel(packageManager).toString()
+                
+                // Filtrar apps que parezcan relevantes
+                if (packageName.contains("bcp") || 
+                    packageName.contains("yape") || 
+                    packageName.contains("interbank") ||
+                    packageName.contains("bbva") ||
+                    packageName.contains("scotiabank") ||
+                    packageName.contains("banco") ||
+                    packageName.contains("bank") ||
+                    packageName.contains("wallet") ||
+                    packageName.contains("whatsapp") ||
+                    packageName.contains("facebook") ||
+                    packageName.contains("instagram") ||
+                    packageName.contains("mercado") ||
+                    packageName.contains("gmail") ||
+                    packageName.contains("photos") ||
+                    packageName.contains("drive")) {
+                    Log.d("🔍 APPS_INSTALADAS", "📱 $appName → ${appInfo.packageName}")
                 }
             }
-            // Publicamos el resultado en el hilo principal
-            withContext(Dispatchers.Main) {
-                if (foundTargetApps.isEmpty()) {
-                    _errorMessage.value = "No se encontraron apps bancarias (BCP, Yape, etc.) instaladas."
+
+            for (appInfo in installedApps) {
+                if (TARGET_PACKAGES.contains(appInfo.packageName)) {
+                    val appName = appInfo.loadLabel(packageManager).toString()
+                    
+                    foundTargetApps.add(
+                        InstalledAppInfo(
+                            appName = appName,
+                            packageName = appInfo.packageName
+                        )
+                    )
+                    Log.d("SetupViewModel", "✅ ENCONTRADA: $appName → ${appInfo.packageName}")
                 }
+            }
+            
+            withContext(Dispatchers.Main) {
+                Log.d("SetupViewModel", "📊 Total apps encontradas: ${foundTargetApps.size}")
+                
+                // SIEMPRE PUBLICAR el resultado
                 _foundApps.value = foundTargetApps
+                
+                if (foundTargetApps.isEmpty()) {
+                    Log.w("SetupViewModel", "⚠️ No se encontraron apps de la lista objetivo")
+                }
             }
         }
     }
+
 
 
     // --- Funciones de API (Backend) ---
