@@ -17,6 +17,17 @@ class GuardiantAccessibilityService : AccessibilityService() {
         private const val TAG = "GuardiantAccService"
         private const val GUARDIANT_PACKAGE = "com.guardiant.app"
 
+        // Apps del sistema que SÍ se permiten (launcher, teclado, etc.)
+        private val ALLOWED_SYSTEM_APPS = setOf(
+            "com.android.systemui",
+            "com.google.android.inputmethod.latin", // Teclado Google
+            "com.samsung.android.inputmethod", // Teclado Samsung
+            "com.android.launcher",
+            "com.android.launcher3",
+            "com.google.android.apps.nexuslauncher",
+            "com.sec.android.app.launcher"
+        )
+
         // Paquetes críticos a monitorear
         private val CRITICAL_PACKAGES = setOf(
             "com.android.settings",
@@ -30,10 +41,13 @@ class GuardiantAccessibilityService : AccessibilityService() {
     override fun onServiceConnected() {
         super.onServiceConnected()
 
-        Log.i(TAG, "Servicio de Accesibilidad conectado")
+        Log.i(TAG, "✅ Servicio de Accesibilidad CONECTADO")
 
         // Inicializar CoercionStateManager
         coercionManager = CoercionStateManager.getInstance(this)
+        
+        // Mostrar estado actual
+        Log.d(TAG, coercionManager.generateReport())
 
         // Configurar el servicio
         val info = AccessibilityServiceInfo().apply {
@@ -94,7 +108,7 @@ class GuardiantAccessibilityService : AccessibilityService() {
     }
 
     /**
-     * Maneja el modo de coerción: bloquea apps protegidas silenciosamente
+     * Maneja el modo de coerción: bloquea TODAS las apps excepto las del sistema permitidas
      */
     private fun handleCoercionMode(event: AccessibilityEvent, packageName: String) {
         // Solo actuar en cambios de ventana (cuando se abre una app)
@@ -102,18 +116,24 @@ class GuardiantAccessibilityService : AccessibilityService() {
             return
         }
 
+        Log.d(TAG, "🔍 Verificando app en modo coerción: $packageName")
+
         // Bloquear la propia app de Guardiant
         if (packageName == GUARDIANT_PACKAGE) {
-            Log.w(TAG, "🚫 Bloqueando acceso a Guardiant (modo coerción)")
+            Log.w(TAG, "🚫 BLOQUEANDO Guardiant (modo coerción)")
             blockCurrentApp()
             return
         }
 
-        // Bloquear apps protegidas
-        if (coercionManager.isPackageProtected(packageName)) {
-            Log.w(TAG, "🚫 Bloqueando app protegida: $packageName")
-            blockCurrentApp()
+        // Permitir apps del sistema esenciales (launcher, teclado)
+        if (ALLOWED_SYSTEM_APPS.contains(packageName) || packageName.startsWith("com.android.")) {
+            Log.d(TAG, "✅ App del sistema permitida: $packageName")
+            return
         }
+
+        // BLOQUEAR TODAS LAS DEMÁS APPS (bancarias, sociales, cualquier app de usuario)
+        Log.w(TAG, "🚫 BLOQUEANDO app (modo coerción): $packageName")
+        blockCurrentApp()
     }
 
     /**

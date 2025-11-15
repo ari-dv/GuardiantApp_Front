@@ -64,7 +64,10 @@ class CoercionStateManager(context: Context) {
     fun saveProtectedApps(apps: List<AppConfig>) {
         val json = gson.toJson(apps)
         prefs.edit().putString(KEY_PROTECTED_APPS, json).apply()
-        Log.d(TAG, "Apps protegidas guardadas: ${apps.size} apps")
+        Log.d(TAG, "📦 Apps protegidas guardadas: ${apps.size} apps")
+        apps.forEach { app ->
+            Log.d(TAG, "  - ${app.appName} (${app.packageName})")
+        }
     }
 
     /**
@@ -92,7 +95,10 @@ class CoercionStateManager(context: Context) {
      * Verifica si un paquete está protegido
      */
     fun isPackageProtected(packageName: String): Boolean {
-        return getProtectedPackageNames().contains(packageName)
+        val protectedPackages = getProtectedPackageNames()
+        val isProtected = protectedPackages.contains(packageName)
+        Log.v(TAG, "Verificando $packageName - Protegidas: $protectedPackages - Resultado: $isProtected")
+        return isProtected
     }
 
     /**

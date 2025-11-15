@@ -246,17 +246,22 @@ class UnlockActivity : AppCompatActivity() {
             val user = auth.currentUser ?: return
             val token = user.getIdToken(true).await().token ?: return
 
+            Log.d("UnlockActivity", "📡 Obteniendo apps protegidas del backend...")
             val response = api.getProtectedApps("Bearer $token")
 
             if (response.isSuccessful && response.body() != null) {
                 val apps = response.body()!!.result.apps
+                Log.d("UnlockActivity", "✅ Recibidas ${apps.size} apps del backend")
+                apps.forEach { app ->
+                    Log.d("UnlockActivity", "  Backend: ${app.appName} (${app.packageName})")
+                }
                 coercionManager.saveProtectedApps(apps)
-                Log.d("UnlockActivity", "Apps protegidas guardadas: ${apps.size}")
+                Log.d("UnlockActivity", "💾 Apps guardadas en CoercionStateManager")
             } else {
-                Log.e("UnlockActivity", "Error al obtener apps: ${response.code()}")
+                Log.e("UnlockActivity", "❌ Error al obtener apps: ${response.code()}")
             }
         } catch (e: Exception) {
-            Log.e("UnlockActivity", "Error fetchAndSaveProtectedApps: ${e.message}", e)
+            Log.e("UnlockActivity", "❌ Error fetchAndSaveProtectedApps: ${e.message}", e)
         }
     }
 
