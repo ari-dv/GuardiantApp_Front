@@ -1,10 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<device-admin
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<device-admin xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-policies>
-        <!-- Bloquear dispositivo -->
-        <limit-password />
-        <!-- Borrar datos -->
+        <!-- Permite bloquear el dispositivo remotamente -->
+        <force-lock />
+        
+        <!-- Permite borrar datos del dispositivo -->
         <wipe-data />
+        
+        <!-- Permite cambiar la contraseña -->
+        <reset-password />
+        
+        <!-- Permite monitorear intentos de desbloqueo -->
+        <watch-login />
+        
+        <!-- Limitar contraseñas -->
+        <limit-password />
     </uses-policies>
 </device-admin>

@@ -1,6 +1,32 @@
 <resources>
-    <string name="app_name">GuardiantApp</string>
-    <string name="device_admin_label">Guardiant Device Admin</string>
-    <string name="accessibility_service_description">Guardiant Security Monitoring Service</string>
-    ```
+    <string name="app_name">Guardiant</string>
+    
+    <!-- Device Admin -->
+    <string name="device_admin_label">Guardiant - Protección del Dispositivo</string>
+    <string name="device_admin_description">Permite a Guardiant proteger tu dispositivo en caso de robo o pérdida mediante bloqueo remoto y borrado de datos.</string>
+    
+    <!-- Accessibility Service -->
+    <string name="accessibility_service_description">Guardiant usa este servicio para monitorear actividad sospechosa en tu dispositivo, detectar intentos de desinstalación no autorizados, y proteger apps sensibles. No recopilamos ni almacenamos información personal.</string>
+    
+    <!-- Onboarding -->
+    <string name="onboarding_welcome_title">Bienvenido a Guardiant</string>
+    <string name="onboarding_welcome_message">Para proteger tu dispositivo contra robo y pérdida, necesitamos configurar algunos permisos especiales.</string>
+    
+    <!-- Permission titles -->
+    <string name="permission_device_admin_title">Administrador de Dispositivo</string>
+    <string name="permission_accessibility_title">Servicio de Accesibilidad</string>
+    <string name="permission_location_title">Ubicación GPS</string>
+    <string name="permission_background_location_title">Ubicación en Segundo Plano</string>
+    <string name="permission_notifications_title">Notificaciones Push</string>
+    <string name="permission_overlay_title">Mostrar sobre otras apps</string>
+    
+    <!-- Common -->
+    <string name="continue_button">Continuar</string>
+    <string name="skip_button">Saltar</string>
+    <string name="cancel_button">Cancelar</string>
+    <string name="ok_button">Aceptar</string>
+    <string name="grant_permission">Otorgar Permiso</string>
+    <string name="permission_granted">Permiso otorgado</string>
+    <string name="permission_denied">Permiso denegado</string>
+    
 </resources>

@@ -8,8 +8,8 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 // ¡ASEGÚRATE DE QUE ESTA LÍNEA DE IMPORT ESTÉ PRESENTE!
 import com.guardiant.app.databinding.ActivityVerificationBinding
-// Importamos la actividad de Setup
-import com.guardiant.app.setup.SetupPinsActivity
+// Importamos el onboarding de permisos
+import com.guardiant.app.permissions.OnboardingActivity
 
 class VerificationActivity : AppCompatActivity() {
 
@@ -85,11 +85,18 @@ class VerificationActivity : AppCompatActivity() {
                 binding.progressBar.visibility = View.GONE
                 Toast.makeText(this, "¡Verificación Mágica Exitosa!", Toast.LENGTH_SHORT).show()
 
-                // ¡AHORA SÍ! Navegamos a la pantalla de PINs que me pediste.
-                val intent = Intent(this, SetupPinsActivity::class.java)
-                startActivity(intent)
-                finishAffinity() // Cierra todo el flujo de auth
+                // En el método de verificación exitosa, cambia:
+                onVerificationSuccess()
             }
         }
+    }
+
+    private fun onVerificationSuccess() {
+        Toast.makeText(this, "✅ Verificación exitosa", Toast.LENGTH_SHORT).show()
+
+        // 🆕 NAVEGAR AL ONBOARDING DE PERMISOS
+        val intent = Intent(this, com.guardiant.app.permissions.OnboardingActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 }
