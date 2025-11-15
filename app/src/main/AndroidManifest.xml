@@ -16,6 +16,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
     <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <queries>
         <!-- Apps Bancarias Perú -->
@@ -108,12 +109,15 @@
             android:exported="false"
             android:screenOrientation="portrait" />
 
-        <!-- Unlock Activity -->
+        <!-- Unlock Activity - Se muestra sobre la pantalla de bloqueo -->
         <activity
             android:name=".auth.UnlockActivity"
             android:exported="false"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize" />
+            android:windowSoftInputMode="adjustResize"
+            android:showWhenLocked="true"
+            android:turnScreenOn="true"
+            android:excludeFromRecents="true" />
 
         <!-- Device Admin Receiver -->
         <receiver
@@ -148,6 +152,11 @@
             android:exported="false"
             android:foregroundServiceType="location" />
 
+        <!-- Lock Screen Service - Detecta cuando se desbloquea el dispositivo -->
+        <service
+            android:name=".security.LockScreenService"
+            android:exported="false" />
+
         <!-- Firebase Messaging Service -->
         <service
             android:name=".security.MyFirebaseMessagingService"
@@ -156,6 +165,16 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+
+        <!-- Boot Receiver - Solo para reiniciar servicios después de reinicio -->
+        <receiver
+            android:name=".security.BootReceiver"
+            android:exported="true"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
 
     </application>
 

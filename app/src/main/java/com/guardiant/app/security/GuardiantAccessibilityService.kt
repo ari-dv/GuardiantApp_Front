@@ -9,11 +9,13 @@ import android.view.accessibility.AccessibilityEvent
 /**
  * Servicio de Accesibilidad de Guardiant
  * Detecta intentos de desinstalación y otras acciones críticas
+ * En modo de coerción, bloquea silenciosamente apps protegidas
  */
 class GuardiantAccessibilityService : AccessibilityService() {
 
     companion object {
         private const val TAG = "GuardiantAccService"
+        private const val GUARDIANT_PACKAGE = "com.guardiant.app"
 
         // Paquetes críticos a monitorear
         private val CRITICAL_PACKAGES = setOf(
@@ -23,10 +25,15 @@ class GuardiantAccessibilityService : AccessibilityService() {
         )
     }
 
+    private lateinit var coercionManager: CoercionStateManager
+
     override fun onServiceConnected() {
         super.onServiceConnected()
 
         Log.i(TAG, "Servicio de Accesibilidad conectado")
+
+        // Inicializar CoercionStateManager
+        coercionManager = CoercionStateManager.getInstance(this)
 
         // Configurar el servicio
         val info = AccessibilityServiceInfo().apply {
@@ -60,6 +67,12 @@ class GuardiantAccessibilityService : AccessibilityService() {
         try {
             val packageName = event.packageName?.toString() ?: return
 
+            // PRIORIDAD 1: Verificar modo de coerción y bloquear apps
+            if (coercionManager.isCoercionModeActive()) {
+                handleCoercionMode(event, packageName)
+                return // No procesar otros eventos en modo coerción
+            }
+
             // Log de eventos (solo para debugging)
             if (event.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
                 Log.d(TAG, "Window cambiada: $packageName")
@@ -77,6 +90,40 @@ class GuardiantAccessibilityService : AccessibilityService() {
 
         } catch (e: Exception) {
             Log.e(TAG, "Error procesando evento: ${e.message}", e)
+        }
+    }
+
+    /**
+     * Maneja el modo de coerción: bloquea apps protegidas silenciosamente
+     */
+    private fun handleCoercionMode(event: AccessibilityEvent, packageName: String) {
+        // Solo actuar en cambios de ventana (cuando se abre una app)
+        if (event.eventType != AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
+            return
+        }
+
+        // Bloquear la propia app de Guardiant
+        if (packageName == GUARDIANT_PACKAGE) {
+            Log.w(TAG, "🚫 Bloqueando acceso a Guardiant (modo coerción)")
+            blockCurrentApp()
+            return
+        }
+
+        // Bloquear apps protegidas
+        if (coercionManager.isPackageProtected(packageName)) {
+            Log.w(TAG, "🚫 Bloqueando app protegida: $packageName")
+            blockCurrentApp()
+        }
+    }
+
+    /**
+     * Bloquea la app actual retornando al home launcher (silenciosamente)
+     */
+    private fun blockCurrentApp() {
+        try {
+            performGlobalAction(GLOBAL_ACTION_HOME)
+        } catch (e: Exception) {
+            Log.e(TAG, "Error bloqueando app: ${e.message}", e)
         }
     }
 

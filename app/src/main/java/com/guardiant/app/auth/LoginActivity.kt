@@ -8,8 +8,8 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.guardiant.app.MainActivity
 import com.guardiant.app.databinding.ActivityLoginBinding
+import com.guardiant.app.security.LockScreenService
 import com.guardiant.app.setup.SetupPinsActivity
-import com.guardiant.app.main.HomeActivity
 
 class LoginActivity : AppCompatActivity() {
 
@@ -62,11 +62,15 @@ class LoginActivity : AppCompatActivity() {
             binding.progressBar.visibility = View.GONE
 
             if (isComplete) {
+                // Setup completo → Iniciar servicio y mostrar pantalla de bloqueo
+                startService(Intent(this, LockScreenService::class.java))
+                
                 Toast.makeText(this, "¡Bienvenido de vuelta!", Toast.LENGTH_SHORT).show()
-                val intent = Intent(this, HomeActivity::class.java)
+                val intent = Intent(this, UnlockActivity::class.java)
                 startActivity(intent)
                 finishAffinity()
             } else {
+                // Setup incompleto → Continuar setup
                 Toast.makeText(this, "Completando configuración...", Toast.LENGTH_SHORT).show()
                 val intent = Intent(this, SetupPinsActivity::class.java)
                 startActivity(intent)

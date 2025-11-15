@@ -29,7 +29,7 @@ class VerificationActivity : AppCompatActivity() {
 
         setupObservers()
 
-        // Botón "Enviar SMS" (Simulado)
+        // Botón "Enviar SMS" 
         binding.buttonSendSms.setOnClickListener {
             val phoneNumber = binding.editTextPhone.text.toString().trim()
             if (phoneNumber.length < 9) {

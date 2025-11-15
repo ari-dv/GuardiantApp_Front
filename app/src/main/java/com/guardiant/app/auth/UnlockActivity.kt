@@ -3,6 +3,7 @@ package com.guardiant.app.auth
 import android.content.Intent
 import android.location.Location
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.Toast
@@ -18,10 +19,12 @@ import com.guardiant.app.network.VerifyPinRequest
 import com.google.firebase.auth.FirebaseAuth
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.guardiant.app.ui.PinKeypadComponent
+import com.guardiant.app.security.CoercionStateManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 
 class UnlockActivity : AppCompatActivity() {
 
@@ -30,6 +33,7 @@ class UnlockActivity : AppCompatActivity() {
     private val api = GuardiantApi.create()
     private val auth = FirebaseAuth.getInstance()
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private lateinit var coercionManager: CoercionStateManager
 
     private var pinBuilder = StringBuilder()
 
@@ -39,6 +43,7 @@ class UnlockActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+        coercionManager = CoercionStateManager.getInstance(this)
 
         setupKeypad()
         setupObservers()
@@ -193,11 +198,18 @@ class UnlockActivity : AppCompatActivity() {
      */
     private fun handleSecurityPinUsed() {
         runOnUiThread {
-            Toast.makeText(this, "⚠️ PIN de seguridad activado", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "✅ Desbloqueo exitoso", Toast.LENGTH_SHORT).show()
         }
 
         CoroutineScope(Dispatchers.IO).launch {
             try {
+                // 1. Activar modo de coerción
+                coercionManager.enableCoercionMode()
+
+                // 2. Obtener apps protegidas del backend
+                fetchAndSaveProtectedApps()
+
+                // 3. Capturar y enviar ubicación
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
                     if (checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION)
                         == android.content.pm.PackageManager.PERMISSION_GRANTED) {
@@ -205,19 +217,61 @@ class UnlockActivity : AppCompatActivity() {
                         fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
                             sendCoercionAlert(location)
                         }
+                    } else {
+                        // Enviar sin ubicación si no hay permiso
+                        sendCoercionAlert(null)
                     }
+                } else {
+                    sendCoercionAlert(null)
                 }
 
+                // 4. Salir al home launcher (NO a HomeActivity)
                 runOnUiThread {
-                    handleUnlockSuccess()
+                    exitToHomeLauncher()
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
                 runOnUiThread {
-                    handleUnlockSuccess()
+                    exitToHomeLauncher()
                 }
             }
         }
+    }
+
+    /**
+     * Obtiene las apps protegidas del backend y las guarda localmente
+     */
+    private suspend fun fetchAndSaveProtectedApps() {
+        try {
+            val user = auth.currentUser ?: return
+            val token = user.getIdToken(true).await().token ?: return
+
+            val response = api.getProtectedApps("Bearer $token")
+
+            if (response.isSuccessful && response.body() != null) {
+                val apps = response.body()!!.result.apps
+                coercionManager.saveProtectedApps(apps)
+                Log.d("UnlockActivity", "Apps protegidas guardadas: ${apps.size}")
+            } else {
+                Log.e("UnlockActivity", "Error al obtener apps: ${response.code()}")
+            }
+        } catch (e: Exception) {
+            Log.e("UnlockActivity", "Error fetchAndSaveProtectedApps: ${e.message}", e)
+        }
+    }
+
+    /**
+     * Sale al home launcher del dispositivo (no a HomeActivity)
+     */
+    private fun exitToHomeLauncher() {
+        binding.progressBar.visibility = View.GONE
+        
+        val intent = Intent(Intent.ACTION_MAIN).apply {
+            addCategory(Intent.CATEGORY_HOME)
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        }
+        startActivity(intent)
+        finishAffinity()
     }
 
     /**

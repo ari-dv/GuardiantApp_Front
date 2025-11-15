@@ -266,6 +266,10 @@ class OnboardingActivity : AppCompatActivity() {
         // Marcar onboarding como completado
         onboardingHelper.markOnboardingCompleted()
         
+        // Iniciar servicio de lock screen
+        val serviceIntent = Intent(this, com.guardiant.app.security.LockScreenService::class.java)
+        startService(serviceIntent)
+        
         // NAVEGAR A HOME (no solo finish())
         val intent = Intent(this, com.guardiant.app.main.HomeActivity::class.java)
         startActivity(intent)

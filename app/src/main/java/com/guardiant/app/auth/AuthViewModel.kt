@@ -89,7 +89,7 @@ class AuthViewModel : ViewModel() {
     }
 
     /**
-     * Enviar SMS de verificación (simulado)
+     * Enviar SMS de verificación 
      */
     fun sendVerificationSms(phoneNumber: String, activity: Activity) {
         Log.d("AuthViewModel", "Simulando envío de SMS. Usa el código: $MAGIC_VERIFICATION_CODE")

@@ -8,8 +8,11 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.guardiant.app.auth.AuthViewModel
 import com.guardiant.app.auth.LoginActivity
+import com.guardiant.app.auth.UnlockActivity
 import com.guardiant.app.auth.VerificationActivity
 import com.guardiant.app.databinding.ActivityMainBinding
+import com.guardiant.app.security.LockScreenService
+import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : AppCompatActivity() {
 
@@ -20,6 +23,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // Verificar si ya hay usuario autenticado con setup completo
+        checkExistingUser()
 
         setupObservers()
 
@@ -62,6 +68,32 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "Registro exitoso. Siguiente paso: verificar teléfono.", Toast.LENGTH_LONG).show()
                 startActivity(Intent(this, VerificationActivity::class.java))
                 finish()
+            }
+        }
+    }
+
+    /**
+     * Verifica si ya hay un usuario autenticado con setup completo
+     * Si es así, redirige a UnlockActivity
+     */
+    private fun checkExistingUser() {
+        val auth = FirebaseAuth.getInstance()
+        val currentUser = auth.currentUser
+
+        if (currentUser != null) {
+            // Usuario ya autenticado, verificar setup
+            authViewModel.checkSetupStatus()
+            
+            authViewModel.isSetupComplete.observe(this) { isComplete ->
+                if (isComplete) {
+                    // Iniciar servicio de lock screen
+                    startService(Intent(this, LockScreenService::class.java))
+                    
+                    // Redirigir a pantalla de bloqueo
+                    val intent = Intent(this, UnlockActivity::class.java)
+                    startActivity(intent)
+                    finishAffinity()
+                }
             }
         }
     }
